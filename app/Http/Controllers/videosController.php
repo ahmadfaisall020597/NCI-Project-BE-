@@ -21,9 +21,14 @@ class videosController extends Controller
      */
     public function index(Request $request)
     {
+        $search = $request->query('search');
         $perPage = $request->query('per_page', 10);
-        $data = videos::paginate($perPage);
-        return $data;
+        $query = videos::query();
+        if ($search) {
+            $query->where('title', 'like', "%{$search}%");
+        }
+
+        $data = $query->paginate($perPage);
         return response()->json([
             'status' => true,
             'message' => 'Berhasil menampilkan data :D',
