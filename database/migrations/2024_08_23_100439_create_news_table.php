@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('deskripsi');
             $table->text('image_url');
+            $table->date('date')->nullable();
             $table->timestamps();
         });
     }

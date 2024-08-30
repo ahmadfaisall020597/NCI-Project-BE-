@@ -27,3 +27,4 @@ Route::resource('videos',videosController::class);
 Route::get('/index-dashboard', [videosController::class, 'indexDashboard']);
 
 Route::resource('news',newsController::class);
+Route::get('/views-dashboard', [newsController::class, 'viewsDashboard']);
