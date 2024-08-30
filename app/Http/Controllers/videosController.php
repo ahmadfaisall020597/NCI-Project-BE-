@@ -12,18 +12,31 @@ class videosController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum', [
-            'except' => ['index', 'show']
+            'except' => ['index', 'show', 'indexDashboard']
         ]);
-
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = videos::all();
+        $perPage = $request->query('per_page', 10);
+        $data = videos::paginate($perPage);
         return $data;
+        return response()->json([
+            'status' => true,
+            'message' => 'Berhasil menampilkan data :D',
+            'data' => $data
+        ], 200);
+    }
+
+    public function indexDashboard()
+    {
+        $data = Videos::orderBy('date', 'desc') 
+            ->take(5)
+            ->get();
+
         return response()->json([
             'status' => true,
             'message' => 'Berhasil menampilkan data :D',
@@ -53,10 +66,10 @@ class videosController extends Controller
 
         $data = $videos->save();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Berhasil menyimpan data :D'
-        ], 200);
+        return response()->json(
+            $videos,
+            200
+        );
     }
 
     /**
@@ -76,26 +89,28 @@ class videosController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request,$id)
-    {
-        
-
-
-    }
+    public function edit(Request $request, $id) {}
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'title' => 'required|string',
             'url' => 'required|string',
+            'date' => 'nullable|date'
         ]);
 
-        $data = videos::findOrFail($id);
+        $data = Videos::findOrFail($id);
         $data->fill($request->all());
+        $data->save();
 
+        return response()->json([
+            'status' => true,
+            'message' => 'Berhasil memperbarui data :D',
+            'data' => $data
+        ], 200);
     }
 
     /**

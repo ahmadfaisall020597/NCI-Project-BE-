@@ -23,3 +23,4 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
 Route::resource('videos',videosController::class);
+Route::get('/index-dashboard', [videosController::class, 'indexDashboard']);
