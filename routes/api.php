@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\newsController;
 use App\Http\Controllers\videosController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,3 +25,5 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 
 Route::resource('videos',videosController::class);
 Route::get('/index-dashboard', [videosController::class, 'indexDashboard']);
+
+Route::resource('news',newsController::class);
