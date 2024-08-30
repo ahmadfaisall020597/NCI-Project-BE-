@@ -10,9 +10,9 @@ class newsController extends Controller
 {
     public function __construct()
     {
-        // $this->middleware('auth:sanctum', [
-        //     'except' => ['index', 'show']
-        // ]);
+        $this->middleware('auth:sanctum', [
+            'except' => ['index', 'show']
+        ]);
 
     }
     /**
@@ -57,7 +57,7 @@ class newsController extends Controller
             $news->image_url = $fileName;
         }
 
-        dd($news);
+        
         $data = $news->save();
 
         return response()->json([
