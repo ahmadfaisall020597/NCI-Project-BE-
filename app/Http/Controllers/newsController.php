@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\news;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class newsController extends Controller
 {
@@ -69,32 +70,31 @@ class newsController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi input
         $request->validate([
             'title' => 'required|string',
             'deskripsi' => 'required|string',
             'image_url' => 'required|image|max:2048',
         ]);
 
-        // Buat objek baru untuk menyimpan data
         $news = new news($request->all());
 
-        // Jika file gambar diupload
         if ($request->file('image_url')) {
             $customPath = 'uploads/files/';
             $fileName = 'news_' . time() . '.' . $request->image_url->extension();
             $file = $request->file('image_url');
             $file->move(public_path($customPath), $fileName);
-            $news->image_url = $customPath . $fileName;
+            $news->image_url = url($customPath . $fileName);
         }
 
-        // Simpan data ke database
         $news->save();
 
         return response()->json([
-            $news,
+            'status' => true,
+            'message' => 'Berhasil menyimpan data :D',
+            'data' => $news,
         ], 200);
     }
+
 
     /**
      * Display the specified resource.
@@ -123,25 +123,51 @@ class newsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $isJson = $request->isJson() || $request->ajax();
+        $input = $isJson ? $request->json()->all() : $request->only(['title', 'deskripsi', 'date']);
+
+        $validator = Validator::make($input, [
             'title' => 'required|string',
             'deskripsi' => 'required|string',
-            'date' => 'nullable|date'
+            'date' => 'nullable|date',
         ]);
 
-        $data = news::findOrFail($id);
-
-        if ($request->hasFile('image_url')) {
-            $customPath = 'uploads/files/';
-
-            $fileName = $id . '_attachment_' . time() . '.' . $request->image_url->extension();
-
-            $request->file('image_url')->move(public_path($customPath), $fileName);
-
-            $data->image_url = $customPath . $fileName;
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        $data->fill($request->except(['image_url']));
+        $data = News::findOrFail($id);
+        $data->fill($input);
+
+        if ($request->hasFile('image_url')) {
+            $imageValidator = Validator::make($request->only('image_url'), [
+                'image_url' => 'required|image|max:2048',
+            ]);
+
+            if ($imageValidator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Image validation error',
+                    'errors' => $imageValidator->errors()
+                ], 422);
+            }
+
+            $customPath = 'uploads/files/';
+            $fileName = 'news_' . time() . '.' . $request->image_url->extension();
+            $fullPath = public_path($customPath);
+
+            if (!file_exists($fullPath)) {
+                mkdir($fullPath, 0755, true);
+            }
+
+            $request->file('image_url')->move($fullPath, $fileName);
+            $data->image_url = url($customPath . $fileName);
+        }
+
         $data->save();
 
         return response()->json([
@@ -150,6 +176,8 @@ class newsController extends Controller
             'data' => $data
         ], 200);
     }
+
+
 
     /**
      * Remove the specified resource from storage.
