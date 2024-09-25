@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\newsController;
 use App\Http\Controllers\videosController;
@@ -28,3 +29,6 @@ Route::get('/index-dashboard', [videosController::class, 'indexDashboard']);
 
 Route::resource('news',newsController::class);
 Route::get('/views-dashboard', [newsController::class, 'viewsDashboard']);
+
+Route::resource('announcement',AnnouncementController::class);
+Route::get('/index-announcement', [AnnouncementController::class, 'indexAnnouncement']);

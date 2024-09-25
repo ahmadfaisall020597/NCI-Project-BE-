@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\videos;
+use App\Models\announcement;
 use Illuminate\Http\Request;
 
-class videosController extends Controller
+class AnnouncementController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth:sanctum', [
-            'except' => ['index', 'show', 'indexDashboard']
+            'except' => ['index', 'show', 'indexAnnouncement']
         ]);
     }
-
     /**
      * Display a listing of the resource.
      */
@@ -23,28 +20,27 @@ class videosController extends Controller
     {
         $search = $request->query('search');
         $perPage = $request->query('per_page', 10);
-        $query = videos::query();
+        $query = Announcement::query();
         if ($search) {
-            $query->where('title', 'like', "%{$search}%");
+            $query->where('deskripsi', 'like', "%{$search}%");
         }
-
         $data = $query->paginate($perPage);
         return response()->json([
             'status' => true,
-            'message' => 'Berhasil menampilkan data :D',
+            'message' => 'Berhasil menampilkan data!',
             'data' => $data
         ], 200);
     }
 
-    public function indexDashboard()
+    public function indexAnnouncement()
     {
-        $data = Videos::orderBy('date', 'desc')
+        $data = announcement::orderBy('date', 'desc')
             ->take(5)
             ->get();
 
         return response()->json([
             'status' => true,
-            'message' => 'Berhasil menampilkan data :D',
+            'message' => 'Berhasil menampilkan data!',
             'data' => $data
         ], 200);
     }
@@ -63,16 +59,14 @@ class videosController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string',
-            'url' => 'required|string',
+            'deskripsi' => 'required|string'
         ]);
+        $announcement = new announcement($request->all());
 
-        $videos = new videos($request->all());
-
-        $data = $videos->save();
+        $data = $announcement->save();
 
         return response()->json(
-            $videos,
+            $announcement,
             200
         );
     }
@@ -80,13 +74,13 @@ class videosController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(string $id)
     {
-        $data = videos::findOrFail($id);
+        $data = Announcement::findOrFail($id);
         return $data;
         return response()->json([
             'status' => true,
-            'message' => 'Berhasil menampilkan data :D',
+            'message' => 'Berhasil menampilkan data!',
             'data' => $data
         ], 200);
     }
@@ -94,7 +88,10 @@ class videosController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, $id) {}
+    public function edit(Request $request, $id)
+    {
+        //
+    }
 
     /**
      * Update the specified resource in storage.
@@ -102,18 +99,17 @@ class videosController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'title' => 'required|string',
-            'url' => 'required|string',
+            'deskripsi' => 'required|string',
             'date' => 'nullable|date'
         ]);
 
-        $data = Videos::findOrFail($id);
+        $data = announcement::findOrFail($id);
         $data->fill($request->all());
         $data->save();
 
         return response()->json([
             'status' => true,
-            'message' => 'Berhasil memperbarui data :D',
+            'message' => 'Berhasil memperbarui data!',
             'data' => $data
         ], 200);
     }
@@ -123,12 +119,10 @@ class videosController extends Controller
      */
     public function destroy($id)
     {
-        $data = videos::findOrFail($id);
-
-        $data->delete();
+        $data = announcement::findOrFail($id);
         return response()->json([
             'status' => true,
-            'message' => 'Berhasil menghapus data :(',
+            'message' => 'Berhasil menghapus data!',
             'data' => $data
         ], 200);
     }
