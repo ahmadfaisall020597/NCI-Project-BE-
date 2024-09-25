@@ -21,17 +21,28 @@ class newsController extends Controller
     {
         $search = $request->query('search');
         $perPage = $request->query('per_page', 10);
+
         $query = news::query();
+
         if ($search) {
             $query->where('title', 'like', "%{$search}%");
         }
+
         $data = $query->paginate($perPage);
+
+        foreach ($data as $item) {
+            $item->image_url = asset($item->image_url);
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Berhasil menampilkan data :D',
             'data' => $data
         ], 200);
     }
+
+
+
 
     public function viewsDashboard()
     {
@@ -58,27 +69,30 @@ class newsController extends Controller
      */
     public function store(Request $request)
     {
+        // Validasi input
         $request->validate([
             'title' => 'required|string',
             'deskripsi' => 'required|string',
             'image_url' => 'required|image|max:2048',
         ]);
+
+        // Buat objek baru untuk menyimpan data
         $news = new news($request->all());
 
+        // Jika file gambar diupload
         if ($request->file('image_url')) {
             $customPath = 'uploads/files/';
-            $fileName = 'news' . time() . '.' . $request->image_url->extension();
+            $fileName = 'news_' . time() . '.' . $request->image_url->extension();
             $file = $request->file('image_url');
             $file->move(public_path($customPath), $fileName);
-            $news->image_url = $fileName;
+            $news->image_url = $customPath . $fileName;
         }
 
-
-        $data = $news->save();
+        // Simpan data ke database
+        $news->save();
 
         return response()->json([
-            'status' => true,
-            'message' => 'Berhasil menyimpan data :D'
+            $news,
         ], 200);
     }
 
