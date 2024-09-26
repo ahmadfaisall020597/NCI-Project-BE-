@@ -89,11 +89,10 @@ class newsController extends Controller
 
         $news->save();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Berhasil menyimpan data :D',
-            'data' => $news,
-        ], 200);
+        return response()->json(
+            $news,
+            200
+        );
     }
 
 
