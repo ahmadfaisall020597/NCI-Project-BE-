@@ -196,4 +196,58 @@ class newsController extends Controller
             'data' => $data
         ], 200);
     }
+
+    public function updateNews(Request $request, $id)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string',
+            'deskripsi' => 'required|string',
+            'date' => 'nullable|date',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $data = News::findOrFail($id);
+        $data->fill($request->all());
+
+        if ($request->hasFile('image_url')) {
+            $imageValidator = Validator::make($request->only('image_url'), [
+                'image_url' => 'required|image|max:2048',
+            ]);
+
+            if ($imageValidator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Image validation error',
+                    'errors' => $imageValidator->errors()
+                ], 422);
+            }
+
+            $customPath = 'uploads/files/';
+            $fileName = 'news_' . time() . '.' . $request->image_url->extension();
+            $fullPath = public_path($customPath);
+
+            if (!file_exists($fullPath)) {
+                mkdir($fullPath, 0755, true);
+            }
+
+            $request->file('image_url')->move($fullPath, $fileName);
+            $data->image_url = url($customPath . $fileName);
+        }
+
+        $data->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Data berhasil diperbarui',
+            'data' => $data
+        ], 200);
+    }
 }

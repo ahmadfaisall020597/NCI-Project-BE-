@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 Route::resource('videos',videosController::class);
 Route::get('/index-dashboard', [videosController::class, 'indexDashboard']);
 
+Route::post('/news-update/{id}', [newsController::class ,'updateNews']);
 Route::resource('news',newsController::class);
 Route::get('/views-dashboard', [newsController::class, 'viewsDashboard']);
 
