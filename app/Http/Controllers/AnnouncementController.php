@@ -120,6 +120,7 @@ class AnnouncementController extends Controller
     public function destroy($id)
     {
         $data = announcement::findOrFail($id);
+        $data->delete();
         return response()->json([
             'status' => true,
             'message' => 'Berhasil menghapus data!',
