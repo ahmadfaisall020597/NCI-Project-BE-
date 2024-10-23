@@ -3,6 +3,7 @@
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\newsController;
+use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\videosController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,12 +25,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
-Route::resource('videos',videosController::class);
+Route::resource('videos', videosController::class);
 Route::get('/index-dashboard', [videosController::class, 'indexDashboard']);
 
-Route::post('/news-update/{id}', [newsController::class ,'updateNews']);
-Route::resource('news',newsController::class);
+Route::post('/news-update/{id}', [newsController::class, 'updateNews']);
+Route::resource('news', newsController::class);
 Route::get('/views-dashboard', [newsController::class, 'viewsDashboard']);
 
-Route::resource('announcement',AnnouncementController::class);
+Route::resource('announcement', AnnouncementController::class);
 Route::get('/index-announcement', [AnnouncementController::class, 'indexAnnouncement']);
+
+Route::post('/pelatihan-update/{id}', [PelatihanController::class, 'updatePelatihan']);
+Route::resource('pelatihan', PelatihanController::class);
+Route::get('/views-dashboard-pelatihan', [PelatihanController::class, 'viewsDashboard']);
