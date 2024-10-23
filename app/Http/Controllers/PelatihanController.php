@@ -30,10 +30,13 @@ class PelatihanController extends Controller
         $data = $query->paginate($perPage);
 
         $data->getCollection()->transform(function ($item) {
-            $item->image_kemendikbud_ristek = asset('/uploads/files' . $item->image_kemendikbud_ristek); // Assuming image_url contains the filename
-            $item->image_logo_nci = asset('/uploads/files' . $item->image_logo_nci); // Assuming image_url contains the filename
-            $item->image_logo_mitra = asset('/uploads/files' . $item->image_logo_mitra); // Assuming image_url contains the filename
-            $item->image_spanduk_pelatihan = asset('/uploads/files' . $item->image_spanduk_pelatihan); // Assuming image_url contains the filename
+            // $item->image_kemendikbud_ristek = asset('/uploads/files' . $item->image_kemendikbud_ristek); // Assuming image_url contains the filename
+            // $item->image_logo_nci = asset('/uploads/files' . $item->image_logo_nci); // Assuming image_url contains the filename
+            // $item->image_logo_mitra = asset('/uploads/files' . $item->image_logo_mitra); // Assuming image_url contains the filename
+            // $item->image_spanduk_pelatihan = asset('/uploads/files' . $item->image_spanduk_pelatihan); // Assuming image_url contains the filename
+            if (!filter_var($item->image_kemendikbud_ristek, FILTER_VALIDATE_URL)) {
+                $item->image_kemendikbud_ristek = asset($item->image_kemendikbud_ristek);
+            }
             return $item;
         });
 
@@ -82,19 +85,33 @@ class PelatihanController extends Controller
         // Ubah 'persyaratan' array menjadi JSON sebelum menyimpannya
         $pelatihan->persyaratan = json_encode($request->persyaratan);
 
-        // Proses upload file
-        if (
-            $request->hasFile('image_kemendikbud_ristek') && $request->hasFile('image_logo_nci') &&
-            $request->hasFile('image_logo_mitra') && $request->hasFile('image_spanduk_pelatihan')
-        ) {
-
-            $customPath = 'uploads/files';
-
-            // Upload masing-masing file
-            $pelatihan->image_kemendikbud_ristek = $request->file('image_kemendikbud_ristek')->store($customPath, 'public');
-            $pelatihan->image_logo_nci = $request->file('image_logo_nci')->store($customPath, 'public');
-            $pelatihan->image_logo_mitra = $request->file('image_logo_mitra')->store($customPath, 'public');
-            $pelatihan->image_spanduk_pelatihan = $request->file('image_spanduk_pelatihan')->store($customPath, 'public');
+        if ($request->file('image_kemendikbud_ristek')) {
+            $customPath = 'uploads/files/';
+            $fileName = 'pelatihan_kemendikbud_' . time() . '.' . $request->image_kemendikbud_ristek->extension();
+            $file = $request->file('image_kemendikbud_ristek');
+            $file->move(public_path($customPath), $fileName);
+            $pelatihan->image_kemendikbud_ristek = url($customPath . $fileName);
+        }
+        if ($request->file('image_logo_nci')) {
+            $customPath = 'uploads/files/';
+            $fileName = 'pelatihan_logo_nci_' . time() . '.' . $request->image_logo_nci->extension();
+            $file = $request->file('image_logo_nci');
+            $file->move(public_path($customPath), $fileName);
+            $pelatihan->image_logo_nci = url($customPath . $fileName);
+        }
+        if ($request->file('image_logo_mitra')) {
+            $customPath = 'uploads/files/';
+            $fileName = 'pelatihan_logo_mitra_' . time() . '.' . $request->image_logo_mitra->extension();
+            $file = $request->file('image_logo_mitra');
+            $file->move(public_path($customPath), $fileName);
+            $pelatihan->image_logo_mitra = url($customPath . $fileName);
+        }
+        if ($request->file('image_spanduk_pelatihan')) {
+            $customPath = 'uploads/files/';
+            $fileName = 'pelatihan_spanduk_' . time() . '.' . $request->image_spanduk_pelatihan->extension();
+            $file = $request->file('image_spanduk_pelatihan');
+            $file->move(public_path($customPath), $fileName);
+            $pelatihan->image_spanduk_pelatihan = url($customPath . $fileName);
         }
 
         // Simpan data ke database

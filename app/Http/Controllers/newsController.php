@@ -19,30 +19,32 @@ class newsController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    $search = $request->query('search');
-    $perPage = $request->query('per_page', 10);
-    $query = news::query();
+    {
+        $search = $request->query('search');
+        $perPage = $request->query('per_page', 10);
+        $query = news::query();
 
-    if ($search) {
-        $query->where('title', 'like', "%{$search}%");
+        if ($search) {
+            $query->where('title', 'like', "%{$search}%");
+        }
+
+        // Modify your query to include the image URL
+        $data = $query->paginate($perPage);
+
+        // Map the image URLs to include the full path
+        $data->getCollection()->transform(function ($item) {
+            if (!filter_var($item->image_url, FILTER_VALIDATE_URL)) {
+                $item->image_url = asset('uploads/files/' . $item->image_url); // Assuming image_url contains the filename
+            }
+            return $item;
+        });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Berhasil menampilkan data :D',
+            'data' => $data
+        ], 200);
     }
-
-    // Modify your query to include the image URL
-    $data = $query->paginate($perPage);
-
-    // Map the image URLs to include the full path
-    $data->getCollection()->transform(function ($item) {
-        $item->image_url = asset('/uploads/files/' . $item->image_url); // Assuming image_url contains the filename
-        return $item;
-    });
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Berhasil menampilkan data :D',
-        'data' => $data
-    ], 200);
-}
 
 
 
