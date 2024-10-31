@@ -164,4 +164,19 @@ class slideShowController extends Controller
             ], 200);
         }
     }
+    public function destroy($id)
+    {
+        $data = slideShow::findOrFail($id);
+        $customPath = 'uploads/files/';
+        if ($data->image_url && file_exists(public_path($customPath) . '/' . $data->image_url)) {
+            unlink(public_path($customPath) . '/' . $data->image_url);
+        }
+        $data->delete();
+        return response()->json([
+            'status' => true,
+            'message' => 'Berhasil menghapus data :(',
+            'data' => $data
+        ], 200);
+    }
+
 }
