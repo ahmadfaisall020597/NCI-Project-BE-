@@ -39,6 +39,6 @@ Route::post('/pelatihan-update/{id}', [PelatihanController::class, 'updatePelati
 Route::resource('pelatihan', PelatihanController::class);
 Route::get('/views-dashboard-pelatihan', [PelatihanController::class, 'viewsDashboard']);
 
-Route::post('slideshow-update/{id', [slideShowController::class, 'updateSlideShow']);
+Route::post('slideshow-update/{id}', [slideShowController::class, 'updateSlideShow']);
 Route::resource('slideshow', slideShowController::class);
 Route::get('/views-dashboard-slideshow', [slideShowController::class, 'viewsDashboard']);
