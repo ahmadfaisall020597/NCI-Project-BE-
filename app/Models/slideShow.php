@@ -14,7 +14,7 @@ class slideShow extends Model
      * @var string
      */
 
-     protected $table = 'slideShow';
+     protected $table = 'slide_shows';
 
      protected $fillable = [
         'title',

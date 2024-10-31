@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\newsController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\videosController;
+use App\Http\Controllers\slideShowController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

@@ -26,7 +26,7 @@ class slideShowController extends Controller
         $query = slideShow::query();
 
         if($search) {
-            $query->where('title', 'like', "%{$search}")
+            $query->where('title', 'like', "%{$search}");
         }
 
         // Modify your query to include the image URL
@@ -44,19 +44,19 @@ class slideShowController extends Controller
             'status' => true,
             'message' => 'Berhasil menampilkan data :D',
             'data' => $data
-        ], 200)
+        ], 200);
     }
 
     public function viewsDashboard()
     {
         $data = slideShow::orderBy('date', 'desc')
             ->take(10)
-            ->get()
+            ->get();
         return response()->json([
             'status' => true,
             'message' => 'Berhasil menampilkan data :D',
             'data' => $data
-        ], 200)
+        ], 200);
     }
 
     public function store(Request $request)
@@ -67,7 +67,7 @@ class slideShowController extends Controller
             'image_url' => 'required|image|max:2048'
         ]);
 
-        $slideShow = new slideShow($request->all())
+        $slideShow = new slideShow($request->all());
 
         if($request->file('image_url')) {
             $customPath = 'uploads/files/';
@@ -90,13 +90,13 @@ class slideShowController extends Controller
      */
     public function show($id)
     {
-        $data = slideShow::findOrFail($id)
+        $data = slideShow::findOrFail($id);
         return $data;
         return response()->json([
             'status' => true,
             'message' => 'Berhasil menampilkan data :D',
             'data' => $data
-        ], 200)
+        ], 200);
     }
 
     public function edit(string $id)
@@ -114,42 +114,42 @@ class slideShowController extends Controller
 
     public function updateSlideShow(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), {
+        $validator = Validator::make($request->all(), [
             'title' => 'required|string',
             'deskripsi' => 'required|string',
             'date' => 'nullable|date',
-        });
+        ]);
 
         if($validator->fails()) {
             return response()->json([
                 'status' => false,
                 'message' => 'Validation error',
                 'errors' => $validator->errors()
-            ], 422)
+            ], 422);
         }
 
-        $data = slideShow::findOrFail($id)
+        $data = slideShow::findOrFail($id);
         $data->fill($request->all());
 
         if($request->hasFile('image_url')) {
             $imageValidator = Validator::make($request->only('image_url'), [
                 'image_url' => 'required|image|max:2048'
-            ])
+            ]);
 
             if($imageValidator->fails()){
                 return response()->json([
                     'status' => false,
                     'message' => 'Image validation error',
                     'errors' => $imageValidator->errors()
-                ], 422)
+                ], 422);
             }
 
             $customPath = 'uploads/files/';
             $fileName = 'slideShow_' . time() . '.' . $request->image_url->extension();
-            $fullPath = public_path($customPath)
+            $fullPath = public_path($customPath);
 
             if(!file_exists($fullPath)) {
-                mkdir($fullPath, 0755, true)
+                mkdir($fullPath, 0755, true);
             }
 
             $request->file('image_url')->move($fullPath, $fileName);
@@ -161,7 +161,7 @@ class slideShowController extends Controller
                 'status' => true,
                 'message' => 'Data berhasil diperbarui',
                 'data' => $data
-            ], 200)
+            ], 200);
         }
     }
 }
