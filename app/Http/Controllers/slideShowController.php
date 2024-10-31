@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\slideShow;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facedes\Validator;
+use Illuminate\Support\Facades\Validator;
 
 class slideShowController extends Controller
 {
@@ -80,7 +80,7 @@ class slideShowController extends Controller
         $slideShow->save();
 
         return response()->json(
-            $slideShow.
+            $slideShow,
             200
         );
     }
@@ -120,7 +120,7 @@ class slideShowController extends Controller
             'date' => 'nullable|date',
         ]);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'status' => false,
                 'message' => 'Validation error',
@@ -131,12 +131,12 @@ class slideShowController extends Controller
         $data = slideShow::findOrFail($id);
         $data->fill($request->all());
 
-        if($request->hasFile('image_url')) {
+        if ($request->hasFile('image_url')) {
             $imageValidator = Validator::make($request->only('image_url'), [
-                'image_url' => 'required|image|max:2048'
+                'image_url' => 'required|image|max:2048',
             ]);
 
-            if($imageValidator->fails()){
+            if ($imageValidator->fails()) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Image validation error',
@@ -145,25 +145,26 @@ class slideShowController extends Controller
             }
 
             $customPath = 'uploads/files/';
-            $fileName = 'slideShow_' . time() . '.' . $request->image_url->extension();
+            $fileName = 'news_' . time() . '.' . $request->image_url->extension();
             $fullPath = public_path($customPath);
 
-            if(!file_exists($fullPath)) {
+            if (!file_exists($fullPath)) {
                 mkdir($fullPath, 0755, true);
             }
 
             $request->file('image_url')->move($fullPath, $fileName);
             $data->image_url = url($customPath . $fileName);
-
-            $data->save();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Data berhasil diperbarui',
-                'data' => $data
-            ], 200);
         }
+
+        $data->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Data berhasil diperbarui',
+            'data' => $data
+        ], 200);
     }
+
     public function destroy($id)
     {
         $data = slideShow::findOrFail($id);
