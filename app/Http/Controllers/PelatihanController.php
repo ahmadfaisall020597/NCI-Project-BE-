@@ -48,7 +48,7 @@ class PelatihanController extends Controller
     }
     public function viewsDashboard()
     {
-        $data = pelatihan::orderBy('date', 'desc')
+        $data = pelatihan::orderBy('tanggal_mulai', 'desc')
             ->take(10)
             ->get();
         return response()->json([
