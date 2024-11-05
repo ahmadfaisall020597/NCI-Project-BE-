@@ -30,5 +30,6 @@ class pelatihan extends Model
         'url_daftar',
         'output',
         'date',
+        'tanggal_mulai'
     ];
 }

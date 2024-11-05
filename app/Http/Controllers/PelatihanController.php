@@ -77,6 +77,7 @@ class PelatihanController extends Controller
             'biaya' => 'required|string',
             'url_daftar' => 'required|string',
             'output' => 'required|string',
+            'tanggal_mulai' => 'required|date',
         ]);
 
         // Inisiasi objek pelatihan dengan semua data request
@@ -132,7 +133,8 @@ class PelatihanController extends Controller
             'biaya' => 'required|numeric',
             'url_daftar' => 'required|string',
             'output' => 'required|string',
-            'date' => 'required|date'
+            'date' => 'required|date',
+            'tanggal_mulai' => 'required|date',
         ]);
 
         if ($validator->fails()) {
